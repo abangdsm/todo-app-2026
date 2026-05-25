@@ -268,4 +268,21 @@ class TaskController extends Controller
             abort(403, 'Unauthorized');
         }
     }
+
+    public function calendar()
+    {
+        return view('tasks.calendar');
+    }
+
+    public function show(Request $request, $id)
+    {
+        $user = $request->user();
+        // Redirect ke index atau return JSON
+        if (request()->wantsJson()) {
+            $task = $user()->tasks()->with('subTasks')->findOrFail($id);
+            return response()->json($task);
+        }
+
+        return redirect()->route('tasks.index');
+    }
 }

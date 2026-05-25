@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/calendar-data', [TaskController::class, 'calendarData'])->name('calendar.data');
     Route::get('/export/json', [TaskController::class, 'exportJson'])->name('export.json');
     Route::post('/import/json', [TaskController::class, 'importJson'])->name('import.json');
+    Route::get('/calendar', [TaskController::class, 'calendar'])->name('calendar.view');
 });
 
 // Auth routes (login, register, logout, forgot password, dll)
