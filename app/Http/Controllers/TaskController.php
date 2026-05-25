@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Task;
 use App\Models\SubTask;
+use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class TaskController extends Controller
@@ -12,6 +13,7 @@ class TaskController extends Controller
     public function index(Request $request)  // ← Terima $request
     {
         $user = $request->user();  // ← Ambil user dari request
+        $tasks = $user->tasks()->with('subTasks')->get();
 
         $tasks = $user->tasks()
             ->with('subTasks')
