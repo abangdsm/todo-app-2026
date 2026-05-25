@@ -9,6 +9,7 @@ use App\Models\Task;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -49,46 +50,42 @@ class User extends Authenticatable
         ];
     }
 
-    // Relasi ke tasks
-    public function tasks()
+    // 🔥 Relasi ke tasks (HARUS return HasMany)
+    public function tasks(): HasMany
     {
-        return $this->hasMany(Task::class)->orderBy('priority_raw')->orderBy('order');
+        return $this->hasMany(Task::class);
     }
 
-    // Relasi ke sub_tasks
-    public function subTasks()
+    // 🔥 Relasi ke sub_tasks
+    public function subTasks(): HasMany
     {
         return $this->hasMany(SubTask::class);
     }
 
-    // Update streak (dipanggil setiap kali selesai task/subtask)
-    public function updateStreak()
+    // 🔥 Method update streak
+    public function updateStreak(): void
     {
         $today = now()->toDateString();
         $lastDate = $this->last_completion_date;
 
         if ($lastDate == $today) {
-            // Udah dihitung hari ini, gak usah ngapa-ngapain
             return;
         }
 
         $yesterday = now()->subDay()->toDateString();
 
         if ($lastDate == $yesterday) {
-            // Streak lanjut
             $this->current_streak += 1;
         } else {
-            // Streak reset
             $this->current_streak = 1;
         }
 
-        // Update best streak
         if ($this->current_streak > $this->best_streak) {
             $this->best_streak = $this->current_streak;
         }
 
         $this->last_completion_date = $today;
-        $this->save();
+        $this->saveQuietly(); // Save without triggering events
     }
 
     // Accessor buat sorting prioritas di query
